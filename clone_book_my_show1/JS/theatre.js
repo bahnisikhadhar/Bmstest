@@ -3,6 +3,7 @@ const id = new URLSearchParams(window.location.search).get("id");
 const booking_head_el = document.querySelector(".booking_head");
 const booking_filter_el = document.querySelector(".booking_filter")
 let seatsToBookEl = document.querySelector(".seatstobook")
+const datesContainerEl = document.querySelector(".dates")
 
 let Api_key = "api_key=57b428c0e112b579eb26e2f43ff08b0f"
 let Base_Url = "https://api.themoviedb.org/3/"
@@ -73,25 +74,54 @@ const renderDetails = async () => {
   `
   booking_filter_el.innerHTML = template2
 
-  //   <header class="booking_head">
-  //   <div class="booking_title container">
-  //     <p class="movie_title">Drishyam 2 - Hindi</p>
-  //   </div>
-  //   <div class="booking_genere container">
-  //     <i class="fa-brands fa-umbraco"></i>
-  //     <span class="genere">DRAMA</span>
-  //     <span class="genere">MYSTERY</span>
-  //     <span class="genere">THRILLER</span>
-  //   </div>
-  // </header>
+
 }
-async function getLiveEvents() {
-  let url = "../JSON/theatre.json";
-  let date = '23/12/2022'
+
+
+// const bookingDays = document.querySelectorAll(".booking_day");
+
+// bookingDays.forEach((bookingDay) => {
+//   bookingDay.addEventListener("click", (event) => {
+//     let selectedDate = event.target.getAttribute("data-date");
+//     console.log(selectedDate)
+//     getLiveEvents(selectedDate);
+//   });
+// });
+
+async function getLiveEvents(date) {
+  //let url = "../JSON/theatre.json";
+  //let date = '23/12/2022'
   const res = await fetch(`/shows?date=${date}`);
   const data = await res.json();
+  console.log(data);
   let theatre = data.data.theatres;
   //let theatreTime = data.theatres.Time;
+  let today = new Date();
+  let dates = [today];
+  for (let i = 1; i <= 5; i++) {
+    let nextDay = new Date();
+    nextDay.setDate(today.getDate() + i);
+    dates.push(nextDay);
+  }
+  let dateTemplate = `<i class="fa-solid fa-less-than"></i>`;
+
+  dates.forEach((date) => {
+    let day = date.toLocaleString("en-us", { month: "short" });
+    let month = date.toLocaleString("en-us", { month: "short" });
+    let dateNumber = date.getDate();
+
+    dateTemplate += `
+    <div class="booking_day" data-date="${date.toISOString()}">
+      <p class="month">${month}</p>
+      <p class="date">${dateNumber}</p>
+     
+    </div>
+  `;
+  });
+
+  dateTemplate += `<i class="fa-solid fa-greater-than"></i>`;
+
+  datesContainerEl.innerHTML = dateTemplate;
   let template = "";
   theatre.forEach((ele) => {
     let template2 = "";
@@ -104,8 +134,8 @@ async function getLiveEvents() {
           </div>
           `;
     });
-    template += 
-    `<div class="booking_location container">
+    template +=
+      `<div class="booking_location container">
     <div class="heart"><i class="fa-regular fa-heart"></i></div>
     <div>
       <p class="theatre_name ${ele.theatreName}">${ele.theatreName}</p>
@@ -130,11 +160,30 @@ async function getLiveEvents() {
      </div>
       `;
   });
-  
+
   bookingCont.innerHTML += template;
 }
 getLiveEvents();
 
+const bookingDay = document.querySelector(".booking_date.container");
+
+
+bookingDay.addEventListener("click", (event) => {
+  event.stopPropagation();
+  console.log(event.path)
+  event.path.forEach((element) => {
+    console.log("triggered")
+    if (element.classList && element.classList.contains("booking_day")) {
+      let selectedDate = element.getAttribute("data-date");
+      selectedDate = new Date(selectedDate)
+      let formattedDate = selectedDate.toLocaleDateString('en-IN', {day: '2-digit', month: '2-digit', year: 'numeric'});
+      console.log(formattedDate)
+      getLiveEvents(formattedDate);
+    }
+  })
+
+
+});
 
 
 // ========================================================FOR FETCHING DATA FROM JSON===================================
@@ -197,13 +246,13 @@ seatsToBookEl.addEventListener("click", (e) => {
 
   let numSeats = e.target.innerText;
   sessionStorage.setItem('numSeats', numSeats);
- // window.location.href = `../HTML/seat.html?id=${id}&seats=${numSeats}` ;
- 
+  // window.location.href = `../HTML/seat.html?id=${id}&seats=${numSeats}` ;
+
 });
-seatToChoose_button_EL.addEventListener('click', function() {
+seatToChoose_button_EL.addEventListener('click', function () {
 
 
- 
+
   const url = `../HTML/seat.html?id=${id}&theatreName=${currentTheatreName}`;
 
   // Navigate to the next page

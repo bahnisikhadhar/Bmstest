@@ -281,8 +281,9 @@ amount_show_anchorEl.addEventListener("click", function(event) {
   const price = document.querySelector('.seat_total_amount').innerText;
   window.location.href = '../HTML/payment.html?price='+price ;
   // localStorage.setItem('selectedSeats1', JSON.stringify(selectedSeats1));
-  // localStorage.setItem('selectedSeats2', JSON.stringify(selectedSeats2));
+  //localStorage.setItem('selectedSeats2', JSON.stringify(selectedSeats2));
   localStorage.setItem('selectedSeats3', JSON.stringify(selectedSeats3));
+
 });
 
 
